@@ -33,4 +33,4 @@ A production build initially returned an HTTP 500 shell before the client recove
 
 ## Honest boundaries
 
-Codex authored code during development. It is not running inside every animation frame. Server-side OpenAI inference is live when configured and was verified with real requests; the local fallback remains deterministic. The browser identifies the source of each result. The score and animation come from the state engine. A recorded audio file proved the transcription endpoint. The built-in microphone and recording controls opened in a browser, while their transcript UI was exercised with an intercepted response; spoken live transcription remains unverified.
+Codex authored code during development. It is not running inside every animation frame. Server-side OpenAI inference is live when configured and was verified with real requests; the local fallback remains deterministic. The browser identifies the source of each result. The score and animation come from the state engine. Both a recorded WAV and the real browser microphone → OpenAI transcription → text-field journey were verified; the spoken browser test used a phrase played through the computer speakers.

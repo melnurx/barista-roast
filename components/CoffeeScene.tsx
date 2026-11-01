@@ -32,13 +32,18 @@ function Liquid({ bottom, height, color, mixed, coffee }: {bottom: number; heigh
   useEffect(() => () => material.dispose(), [material]);
   useFrame(({clock}) => { if (material.userData.shader) material.userData.shader.uniforms.uTime.value = clock.elapsedTime; });
   if (height < .002) return null;
-  return <mesh position={[0, BASE + bottom + height/2, 0]} material={material} castShadow receiveShadow><cylinderGeometry args={[radiusAt(bottom+height)-.03, radiusAt(bottom)-.03, height, 80, 1]} /></mesh>;
+  return <>
+    <mesh position={[0, BASE + bottom + height/2, 0]} material={material} castShadow receiveShadow><cylinderGeometry args={[radiusAt(bottom+height)-.03, radiusAt(bottom)-.03, height, 80, 1]} /></mesh>
+    {height>.045&&!mixed&&<mesh position={[0,BASE+bottom+height+.008,0]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[radiusAt(bottom+height)-.052,.012,6,80]}/><meshBasicMaterial color={coffee?'#f5d5ac':'#fff5e1'} transparent opacity={coffee?.28:.18} depthWrite={false}/></mesh>}
+  </>;
 }
 function Surface({height,color,foamy}: {height:number;color:string;foamy:boolean}) {
-  if(height<.01)return null;
+  const group=useRef<THREE.Group>(null);
   const radius=radiusAt(height)-.045;
   const level=BASE+height+.009;
-  return <group position={[0,level,0]}>
+  useFrame(({clock})=>{if(group.current)group.current.position.y=level+Math.sin(clock.elapsedTime*1.7)*.004;});
+  if(height<.01)return null;
+  return <group ref={group} position={[0,level,0]}>
     <mesh rotation={[-Math.PI/2,0,0]}><circleGeometry args={[radius,80]}/><meshPhysicalMaterial color={color} roughness={.2} clearcoat={.8} clearcoatRoughness={.14} side={THREE.DoubleSide}/></mesh>
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,.012,0]}><ringGeometry args={[radius*.68,radius*.7,80]}/><meshBasicMaterial color="#fff9ee" transparent opacity={.26} depthWrite={false} side={THREE.DoubleSide}/></mesh>
     <mesh rotation={[-Math.PI/2,0,0]} position={[-.21,.018,-.16]} scale={[1,.43,1]}><circleGeometry args={[radius*.27,48]}/><meshBasicMaterial color="#fffdf4" transparent opacity={.14} depthWrite={false} side={THREE.DoubleSide}/></mesh>
@@ -51,7 +56,11 @@ function Whipped({y, amount}: {y: number; amount: number}) {
     return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),180,.105,10,false);
   }, []);
   useEffect(() => () => geometry.dispose(), [geometry]);
-  return <mesh geometry={geometry} position={[0,y,0]} scale={[1,Math.min(1,amount/25),1]} castShadow><meshStandardMaterial color="#fff0d6" roughness={.65} /></mesh>;
+  return <group position={[0,y,0]} scale={[1,Math.min(1,amount/25),1]}>
+    <mesh geometry={geometry} castShadow><meshStandardMaterial color="#fff0d6" roughness={.58}/></mesh>
+    <mesh rotation={[-Math.PI/2,0,0]} position={[0,.045,0]} castShadow><torusGeometry args={[.69,.09,10,64]}/><meshStandardMaterial color="#fff0d6" roughness={.58}/></mesh>
+    {Array.from({length:12},(_,i)=>{const a=i/12*Math.PI*2;return <mesh key={i} position={[Math.sin(a)*.7,.065,Math.cos(a)*.7]} scale={[1,.56,1]} castShadow><sphereGeometry args={[.075,12,8]}/><meshStandardMaterial color={i%3===0?'#fff5e4':'#f8e7cf'} roughness={.62}/></mesh>;})}
+  </group>;
 }
 function Ice({quantity, level, animate}: {quantity: number; level:number; animate:boolean}) {
   const group=useRef<THREE.Group>(null);
@@ -79,6 +88,17 @@ function Pour({active, level}: {active: IngredientId;level:number}) {
     <group ref={drops}>{Array.from({length:8},(_,i)=><mesh key={i}><sphereGeometry args={[.045,8,8]}/><meshStandardMaterial color={color} roughness={.3}/></mesh>)}</group>
     <mesh ref={ripple} position={[-.29,bottom+.025,0]} rotation={[-Math.PI/2,0,0]}><torusGeometry args={[.5,.015,6,48]}/><meshStandardMaterial color={color} transparent opacity={.5}/></mesh>
   </group>;
+}
+function FinishGlint() {
+  const group=useRef<THREE.Group>(null), glint=useRef<THREE.Mesh>(null), started=useRef<number|null>(null);
+  useFrame(({clock})=>{
+    if(!group.current||!glint.current)return;
+    if(started.current===null)started.current=clock.elapsedTime;
+    const age=clock.elapsedTime-started.current;
+    group.current.rotation.y=-Math.PI/2+Math.min(age,2.6)*.52;
+    (glint.current.material as THREE.MeshBasicMaterial).opacity=Math.max(0,.62*(1-age/2.6));
+  });
+  return <group ref={group} position={[0,3.496,0]}><mesh ref={glint} rotation={[-Math.PI/2,0,0]} renderOrder={7}><torusGeometry args={[1.123,.025,8,32,Math.PI*.28]}/><meshBasicMaterial color="#fffdf1" transparent opacity={.62} depthWrite={false}/></mesh></group>;
 }
 function Cup({recipe,poured,active,preview,stirred,onReady}: Props) {
   const root=useRef<THREE.Group>(null);
@@ -109,13 +129,14 @@ function Cup({recipe,poured,active,preview,stirred,onReady}: Props) {
     <mesh geometry={glassGeometry} position={[0,.33,0]} renderOrder={4}><meshPhysicalMaterial color="#faf2df" transparent opacity={.17} roughness={.13} metalness={.08} clearcoat={1} envMapIntensity={1.8} side={THREE.DoubleSide} depthWrite={false}/></mesh>
     {[[-.08,.18,.18],[1.06,.11,.1]].map(([start,arc,opacity],i)=><mesh key={i} position={[0,1.91,0]} renderOrder={5}><cylinderGeometry args={[1.143,.94,3.08,96,1,true,start,arc]}/><meshBasicMaterial color="#fffdf3" transparent opacity={opacity} depthWrite={false} side={THREE.DoubleSide}/></mesh>)}
     {[.42,3.48].map((y,i)=><mesh key={y} position={[0,y,0]} rotation={[Math.PI/2,0,0]} renderOrder={5}><torusGeometry args={[i?1.125:.906,i?.028:.035,12,96]}/><meshPhysicalMaterial color="#fff4da" transparent opacity={.65} roughness={.1} metalness={.15} depthWrite={false}/></mesh>)}
+    {finished&&<FinishGlint/>}
     {Array.from({length:40},(_,i)=>{const a=i/40*Math.PI*2;return <mesh key={i} position={[Math.sin(a)*1.015,1.88,Math.cos(a)*1.015]} rotation={[Math.cos(a)*.066,0,-Math.sin(a)*.066]} renderOrder={5}><cylinderGeometry args={[.013,.019,2.99,6]}/><meshPhysicalMaterial color="#fff2cf" transparent opacity={.12} roughness={.13} depthWrite={false}/></mesh>;})}
     <mesh position={[.58,1.68,.9]} rotation={[0,.57,0]} renderOrder={6}><planeGeometry args={[1.04,1.04]}/><meshBasicMaterial map={logo} transparent depthWrite={false}/></mesh>
     </group>{active&&<Pour active={active} level={BASE+fillHeight}/>}
-    <mesh position={[0,.16,0]} receiveShadow castShadow><cylinderGeometry args={[1.73,1.79,.28,96]}/><meshStandardMaterial color="#c9ae87" roughness={.85}/></mesh>
-    <mesh position={[0,.306,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[1.47,1.49,96]}/><meshStandardMaterial color="#a98b64" roughness={1}/></mesh>
-    {finished&&<mesh position={[0,.312,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[1.54,1.63,96]}/><meshBasicMaterial color="#fff0c9" transparent opacity={.48} depthWrite={false}/></mesh>}
-    {[[-1.95,.07,.8],[-2.22,.065,.59],[1.91,.07,.71],[2.17,.07,.41]].map((p,i)=><group key={i} position={p as [number,number,number]} rotation={[.15,i*2,.15]}><mesh scale={[.1,.065,.18]} castShadow><sphereGeometry args={[1,16,12]}/><meshStandardMaterial color="#684330" roughness={.8}/></mesh><mesh position={[0,.059,0]} scale={[.009,.008,.12]}><sphereGeometry args={[1,8,8]}/><meshStandardMaterial color="#302118"/></mesh></group>)}
+    <mesh position={[0,.16,0]} receiveShadow castShadow><cylinderGeometry args={[1.49,1.54,.28,96]}/><meshStandardMaterial color="#c9ae87" roughness={.85}/></mesh>
+    <mesh position={[0,.306,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[1.27,1.29,96]}/><meshStandardMaterial color="#a98b64" roughness={1}/></mesh>
+    {finished&&<mesh position={[0,.312,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[1.34,1.42,96]}/><meshBasicMaterial color="#fff0c9" transparent opacity={.48} depthWrite={false}/></mesh>}
+    {[[-1.95,.07,.8],[-2.22,.065,.59],[1.9,.07,-.4],[2.1,.07,-.6]].map((p,i)=><group key={i} position={p as [number,number,number]} rotation={[.15,i*2,.15]}><mesh scale={[.1,.065,.18]} castShadow><sphereGeometry args={[1,16,12]}/><meshStandardMaterial color="#684330" roughness={.8}/></mesh><mesh position={[0,.059,0]} scale={[.009,.008,.12]}><sphereGeometry args={[1,8,8]}/><meshStandardMaterial color="#302118"/></mesh></group>)}
     <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.005,0]} receiveShadow><planeGeometry args={[200,200]}/><meshBasicMaterial color="#e9dcc6" toneMapped={false}/></mesh>
     <ContactShadows position={[0,.005,0]} opacity={.35} scale={12} blur={2.4} far={7} resolution={256}/>
   </>;
@@ -124,9 +145,9 @@ export default function CoffeeScene(props: Props) {
   const [mounted,setMounted]=useState(false);
   useEffect(()=>setMounted(true),[]);
   if(!mounted) return <div className="scene-loading">Warming up the coffee lab…</div>;
-  return <SceneBoundary><Canvas shadows camera={{position:[3.65,3.8,6.1],fov:34}} dpr={[1,1.7]} gl={{antialias:true,alpha:true,preserveDrawingBuffer:true}} aria-label="Interactive 3D coffee glass; drag to rotate">
+  return <SceneBoundary><Canvas shadows camera={{position:[3.65,3.8,6.1],fov:39}} dpr={[1,1.35]} gl={{antialias:true,alpha:true,preserveDrawingBuffer:true}} aria-label="Interactive 3D coffee glass; drag to rotate">
     <color attach="background" args={['#e9dcc6']}/><ambientLight intensity={1}/><directionalLight position={[4,8,5]} intensity={2.7} castShadow shadow-mapSize={[1024,1024]}/><directionalLight position={[-5,5,-3]} intensity={1.6} color="#fff4de"/>
     <Suspense fallback={null}><Environment resolution={128}><Lightformer intensity={3} position={[-4,5,3]} scale={[3,8,1]} rotation={[0,Math.PI/3,0]}/><Lightformer intensity={2.5} position={[4,4,-2]} scale={[2,6,1]} rotation={[0,-Math.PI/3,0]}/><Lightformer intensity={2} position={[0,7,1]} scale={[6,1,1]}/></Environment><Cup {...props}/></Suspense>
-    <OrbitControls target={[0,1.75,0]} enableZoom={false} enablePan={false} minPolarAngle={Math.PI/3.3} maxPolarAngle={Math.PI/2.1} rotateSpeed={.65}/>
+    <OrbitControls target={[0,1.48,0]} enableZoom={false} enablePan={false} minPolarAngle={Math.PI/3.3} maxPolarAngle={Math.PI/2.1} rotateSpeed={.65}/>
   </Canvas></SceneBoundary>;
 }

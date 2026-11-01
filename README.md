@@ -47,11 +47,11 @@ Also try “No caramel and add two espresso shots” or “Switch to oat milk”
 - Live immutable quantity ledger with pause/resume, future-plan reconciliation and capacity constraints.
 - Friendly ingredient-grounded commentary and deterministic scores with visible arithmetic.
 - Optional sound cues, orbit interaction, a swirl effect, final reveal and a downloadable receipt.
-- Responsive desktop/mobile layout, keyboard controls, labelled input, modal focus handling and reduced CSS motion.
+- Coffee-first two-column stage on laptop/projector, compact order input and microphone, Beau and chaos score beside the cup, collapsed detail controls, mobile layout, keyboard controls, modal focus handling and reduced CSS motion.
 - Browser speech recognition when supported; failure leaves text fully usable.
 - Optional server-side OpenAI interpretation, final roast and recorded-audio transcription, with timeouts and local fallback.
 
-**Live OpenAI mode has been verified with a real key, locally and on the public Site.** Three new orders, a mid-pour revision, a final roast, and an audio transcription returned `source: "openai"` locally. The public Site then passed an anonymous order → interruption → roast → receipt/download journey and a recorded-audio transcription. The browser footer identifies whether the current response came from OpenAI or the local fallback; no model drives the animation or score. Without a key or when an API request fails, the deterministic parser and jokes keep the core experience working. The built-in microphone opened and the recording controls worked in a real browser. The UI transcript callback was tested with an intercepted response; live spoken transcription through that microphone has not been verified.
+**Live OpenAI mode has been verified with a real key, locally and on the public Site.** Three new orders, a mid-pour revision, a final roast, and an audio transcription returned `source: "openai"` locally. The public Site then passed an anonymous order → interruption → roast → receipt/download journey and a recorded-audio transcription. The browser footer distinguishes `OPENAI READY` before an order, `OPENAI CONNECTED` for a live result, and `LOCAL DEMO` for local fallback; no model drives the animation or score. Without a key or when an API request fails, the deterministic parser and jokes keep the core experience working. A spoken test phrase played through the computer speakers was recorded by the built-in microphone, transcribed by the app through OpenAI, and displayed in the text field.
 
 ## How it works
 
