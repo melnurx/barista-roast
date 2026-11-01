@@ -101,3 +101,16 @@ test('AI roast speaks a rounded partial pump while scoring the exact poured amou
     assert.equal(poured.caramel, 1.55612903);
   } finally { globalThis.fetch = oldFetch; if (oldKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = oldKey; }
 });
+
+test('a fabricated amount in an AI roast cannot contradict the committed receipt', async () => {
+  const oldKey = process.env.OPENAI_API_KEY;
+  const oldFetch = globalThis.fetch;
+  process.env.OPENAI_API_KEY = 'test-only-placeholder';
+  globalThis.fetch = async () => Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify({ commentary: 'Four and a half pumps of caramel survived the change.', name: 'Caramel Plot Twist' }) }] }] });
+  try {
+    const result = await roastDrink({ ...DEFAULT_RECIPE, wantsHealthy: true }, { caramel: 1.55612903, espresso: 4, oat: 180 }, 1);
+    assert.equal(result.source, 'local');
+    assert.match(result.commentary, /1\.6 syrup pumps/);
+    assert.doesNotMatch(result.commentary, /four and a half/i);
+  } finally { globalThis.fetch = oldFetch; if (oldKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = oldKey; }
+});

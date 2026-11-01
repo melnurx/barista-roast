@@ -4,7 +4,7 @@
 
 | Boundary | Result |
 |---|---|
-| Deterministic recipe / reducer / API tests | 27 tests pass via `npm test`, including rounded spoken quantity versus exact committed quantity |
+| Deterministic recipe / reducer / API tests | 28 tests pass via `npm test`, including a guard against AI jokes inventing amounts that contradict the receipt |
 | Static typing | `npm run typecheck` passes |
 | Production build | Sites/Vinext build completes for browser assets and Cloudflare Worker |
 | Production HTTP | `/` and `/api/health` return 200 after isolating the browser-only scene from SSR |
@@ -32,6 +32,7 @@
 - Explicit “add N” replaced quantities instead of incrementing them.
 - Quantity/capacity warnings did not reach the UI.
 - The initial production SSR response could fail while the browser recovered. Loading the WebGL scene as a browser-only dynamic component restores a clean HTTP 200 response and splits out the heavy scene code.
+- A hosted final joke invented a syrup amount while the receipt correctly showed 1.6 pumps. The roast prompt now avoids numeric examples, and numeric AI jokes fall back to commentary calculated from the committed drink.
 
 The ordinary production browser journey recorded zero console errors. The two failed-network errors in the outage test were deliberately injected by aborting the order route.
 
