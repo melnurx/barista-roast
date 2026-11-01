@@ -1,0 +1,39 @@
+1
+00:00:00,000 --> 00:00:05,000
+BARISTA ROAST
+Your coffee. Freshly judged.
+
+2
+00:00:05,000 --> 00:00:09,000
+An outrageous order becomes
+an ingredient-by-ingredient pour.
+
+3
+00:00:09,000 --> 00:00:15,000
+Actually... make it healthy.
+Change your mind in the middle of a pour.
+
+4
+00:00:15,000 --> 00:00:24,000
+Future extras can change.
+Caramel already poured stays in the glass.
+
+5
+00:00:24,000 --> 00:00:33,000
+A grounded roast. Transparent scores.
+All based on the drink actually made.
+
+6
+00:00:33,000 --> 00:00:42,000
+Keep the evidence.
+Download your own roast receipt.
+
+7
+00:00:42,000 --> 00:00:49,000
+Clearly labelled LOCAL DEMO.
+Optional OpenAI endpoints are ready; live AI is not claimed here.
+
+8
+00:00:49,000 --> 00:00:54,800
+Built with Codex. 26 passing tests.
+You can change your mind. You can't un-pour caramel.
