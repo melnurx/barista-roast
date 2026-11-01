@@ -4,7 +4,7 @@
 
 | Boundary | Result |
 |---|---|
-| Deterministic recipe / reducer / API tests | 26 tests pass via `npm test` |
+| Deterministic recipe / reducer / API tests | 27 tests pass via `npm test`, including rounded spoken quantity versus exact committed quantity |
 | Static typing | `npm run typecheck` passes |
 | Production build | Sites/Vinext build completes for browser assets and Cloudflare Worker |
 | Production HTTP | `/` and `/api/health` return 200 after isolating the browser-only scene from SSR |
@@ -14,6 +14,12 @@
 | Receipt export | Downloaded PNG successfully and visually inspected it |
 | Mobile | 390×844 viewport has no horizontal overflow; input receives focus when paused |
 | API outage | Deliberately aborted `/api/order`; local fallback completes the brew, accepts “One more shot”, and delivers 3 actual shots |
+| Live OpenAI orders | Three new creative orders returned HTTP 200, `source: openai`, in 3.4 s, 3.7 s and 3.3 s; requested and excluded ingredients matched the structured recipes |
+| Live mid-pour revision | In a real browser, a five-pump caramel plan was interrupted at 1.556 pumps. The healthy edit cancelled the rest and whipped cream; the final drink retained 1.556 caramel, 180 ml soy, 3 espresso shots and 5 ice cubes |
+| Live final roast | HTTP 200, `source: openai`; revised prompt returned a short drink name and joke about the partial caramel, while the deterministic chaos score remained 43 |
+| Live transcription endpoint | A recorded test WAV was transcribed accurately via `POST /api/transcribe` with `source: openai` in 2.9 s |
+| Real microphone and UI | Browser opened the MacBook Pro built-in microphone with one live audio track; the app showed Listening and Stop recording, then put an intercepted test transcript in the order field |
+| Voice failure UI | A browser-injected microphone denial showed the permission error, retained an enabled text field, and left the microphone control ready for another try |
 
 ## Bugs found and repaired
 
@@ -26,9 +32,9 @@ The ordinary production browser journey recorded zero console errors. The two fa
 
 ## Limits
 
-- No real OpenAI key was configured, by user choice. Optional API success/error paths are covered with mocks; live inference latency and account model access remain unverified.
-- Real microphone capture/transcription was not exercised. Browser recognition availability and permission remain device-dependent; text is always available.
-- The renderer approximates liquids with layered meshes and shaders. It is not full fluid physics, and the swirl is a visual effect.
+- The live API checks used a local server-side key. The hosted secret is configured separately and requires public deployment verification before hosted AI can be claimed.
+- The backend transcription test used a recorded audio file. The real microphone capture and recording controls were exercised, but the UI transcription reply was intercepted, so no spoken end-to-end transcription claim is made. Text is always available.
+- The renderer approximates liquids with layered meshes and shaders. Layer stacking follows ingredient categories because the scene receives aggregate poured quantities rather than chronological pour events. Changing the stacking rule without a pour history could misrepresent the reliable ledger; the swirl is a visual effect.
 - Initial page load still needs the app assets. “Network fallback” means the loaded core survives API failure; this is not an offline-installable PWA.
 - The build reports a large Three.js scene chunk. Loading is split from the initial UI; low-powered GPUs may render more slowly.
 - A local memory session resets on page reload. There is no saved order history or backend database.

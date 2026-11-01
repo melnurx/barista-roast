@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type Rea
 import { ArrowDownToLine, ArrowRight, Check, Coffee, Hand, Headphones, Leaf, LockKeyhole, Mic, Minus, Plus, RotateCcw, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
 const CoffeeScene = dynamic(() => import('./CoffeeScene'), {ssr:false, loading:()=><div className="scene-loading">Warming up the coffee lab…</div>});
-import { CAPACITY, DEFAULT_RECIPE, INGREDIENTS, SAMPLE_ORDER, type IngredientId, type OrderResult, type Recipe, type RoastResult } from '@/lib/contracts';
+import { CAPACITY, DEFAULT_RECIPE, INGREDIENTS, SAMPLE_ORDER, type IngredientId, type OrderResult, type Poured, type Recipe, type RoastResult } from '@/lib/contracts';
 import { buildRoast, describeIngredient, parseOrder, reconcileRecipe, scoreRecipe } from '@/lib/recipe';
 import { brewReducer, initialBrew } from '@/lib/brew';
 import { playSound } from '@/lib/sound';
@@ -31,6 +31,36 @@ const QUIPS:Partial<Record<IngredientId,string>> = {
   water:'Water. A very sensible plot twist.',
 };
 
+function committedPhrase(poured: Poured): string | null {
+  const last = Object.entries(poured).filter(([, quantity]) => (quantity ?? 0) > .01).at(-1);
+  if (!last) return null;
+  const [id, quantity] = last as [IngredientId, number];
+  const amount = Math.round(quantity * 10) / 10;
+  const unit = INGREDIENTS[id].unit;
+  return `${amount} ${unit}${unit !== 'ml' && amount !== 1 ? 's' : ''} of ${INGREDIENTS[id].label.toLowerCase()}`;
+}
+
+function revisionQuip(order: string, poured: Poured, fallback: string): string {
+  const already = committedPhrase(poured);
+  if (!already) return fallback;
+  const request = order.toLowerCase();
+  const caramel = poured.caramel ?? 0;
+  const caramelAmount = Math.round(caramel * 10) / 10;
+  const caramelUnit = caramelAmount === 1 ? 'pump' : 'pumps';
+  if (/healthy|less sweet|less sugar|cut the sugar/.test(request)) {
+    return caramel > .01
+      ? `Already in the glass: ${caramelAmount} ${caramelUnit} of caramel. I can cancel the rest; this cup keeps receipts.`
+      : `I can cancel future sweet extras. Already in the glass: ${already}. This cup keeps receipts.`;
+  }
+  if (/no (?:more )?caramel|without caramel|remove caramel/.test(request) && caramel > .01)
+    return `I can stop the caramel now. ${caramelAmount} ${caramelUnit} already made it in, with a receipt.`;
+  if (/(?:add|extra|another|more).*(?:shot|espresso)/.test(request))
+    return `Extra espresso is on the way. Already in the glass: ${already}. This edit has consequences.`;
+  if (/(?:switch|swap|change).*(?:milk|oat|almond|soy)/.test(request))
+    return `I can change the remaining milk. Already in the glass: ${already}. No take-backs from this cup.`;
+  return `Already in the glass: ${already}. I can rewrite the rest; this cup keeps receipts.`;
+}
+
 function BaristaFace() { return <svg viewBox="0 0 80 80" aria-hidden="true"><path d="m40 2 8 9 12-2 3 12 12 5-4 12 7 10-10 8-1 12-13 1-8 9-10-8-12 2-5-12-11-5 4-12-7-10 10-8 1-12 13-1Z" fill="currentColor"/><path d="M23 28c5-5 11-5 15-1m9 0c4-3 8-2 11 1" stroke="#f7eddb" fill="none" strokeWidth="3" strokeLinecap="round"/><ellipse cx="30" cy="37" rx="2.8" ry="4" fill="#f7eddb"/><ellipse cx="51" cy="37" rx="2.8" ry="4" fill="#f7eddb"/><path d="M28 48c6 11 19 11 25-1" stroke="#f7eddb" strokeWidth="3" fill="none" strokeLinecap="round"/></svg>; }
 
 function Modal({children,onClose,label}:{children:ReactNode;onClose:()=>void;label:string}) {
@@ -50,7 +80,7 @@ export default function CoffeeLab() {
   const [orderNo,setOrderNo]=useState(1),[receiptSaved,setReceiptSaved]=useState(false);
   const [finalName,setFinalName]=useState('');
   const recorder=useRef<MediaRecorder|null>(null), recognition=useRef<{stop:()=>void}|null>(null), voiceTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
-  const requestId=useRef(0), finishId=useRef(0), scene=useRef<HTMLDivElement>(null), changeInput=useRef<HTMLTextAreaElement>(null);
+  const requestId=useRef(0), finishId=useRef(0), quipHoldUntil=useRef(0), scene=useRef<HTMLDivElement>(null), changeInput=useRef<HTMLTextAreaElement>(null);
   const idle=state.phase==='idle', brewing=state.phase==='brewing', paused=state.phase==='paused', complete=state.phase==='complete';
   const active=brewing?state.plan[state.index]?.id??null:null;
   const score=useMemo(()=>scoreRecipe(state.recipe,idle?undefined:state.poured,state.changes),[state.recipe,state.poured,state.changes,idle]);
@@ -65,7 +95,7 @@ export default function CoffeeLab() {
     const timer=setInterval(()=>{const now=performance.now();dispatch({type:'tick',dt:(now-previous)/1000});previous=now;},50);
     return()=>clearInterval(timer);
   },[brewing]);
-  useEffect(()=>{if(active)setCommentary(QUIPS[active]??'Another ingredient. Another life choice.');},[active]);
+  useEffect(()=>{if(active && performance.now()>=quipHoldUntil.current)setCommentary(QUIPS[active]??'Another ingredient. Another life choice.');},[active]);
   useEffect(()=>{if(paused)changeInput.current?.focus();},[paused]);
   useEffect(()=>()=>{recognition.current?.stop();if(recorder.current?.state==='recording')recorder.current.stop();if(voiceTimer.current)clearTimeout(voiceTimer.current);},[]);
   useEffect(()=>{
@@ -94,14 +124,15 @@ export default function CoffeeLab() {
         result={...reconciled,warnings:[...new Set([...reconciled.warnings,...reconciled.recipe.notes])],commentary:buildRoast(reconciled.recipe),source:'local'};
       }
       if(id!==requestId.current)return;
-      setCommentary(result.commentary);setSource(result.source);setWarnings(result.warnings);setStirred(false);setReceiptSaved(false);
+      quipHoldUntil.current=performance.now()+2500;
+      setCommentary(isChange?revisionQuip(text,poured,result.commentary):result.commentary);setSource(result.source);setWarnings(result.warnings);setStirred(false);setReceiptSaved(false);
       if(isChange){dispatch({type:'revise',recipe:result.recipe});setChange('');playSound('pop',sound);}
       else{dispatch({type:'start',recipe:result.recipe});playSound('start',sound);if(window.innerWidth<621)scene.current?.scrollIntoView({behavior:'smooth',block:'start'});}
     }catch{setVoiceStatus('Could not read that order. Try “an iced oat latte”.');}
     finally{if(id===requestId.current)setBusy(false);}
   },[busy,state.recipe,state.poured,ai,sound]);
 
-  function pause(){dispatch({type:'pause'});setCommentary('An “actually” mid-pour? Bold. What’s already in the glass stays in the glass.');setChange('');playSound('pause',sound);}
+  function pause(){dispatch({type:'pause'});const already=committedPhrase(state.poured);setCommentary(already?`Already in the glass: ${already}. I can rewrite the rest; this cup keeps receipts.`:'An “actually” mid-pour? Bold. What’s already in the glass stays in the glass.');setChange('');playSound('pause',sound);}
   function reset(){requestId.current++;finishId.current++;setBusy(false);dispatch({type:'reset'});setWarnings([]);setStirred(false);setFinalName('');setOrderNo(n=>n+1);setCommentary('Fresh glass. Fresh start. Same questionable judgement.');setModal(null);}
   function acceptTranscript(text:string){if(paused)setChange(text);else setOrder(text);setPreset(-1);setVoiceStatus('Heard you. Check the words, then send your order.');}
   async function voice(){

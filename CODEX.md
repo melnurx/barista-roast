@@ -11,6 +11,8 @@ Built on 1 November 2026 for the London hackathon. This document records actual 
 - Built and tested the local parser, server API fallback, capacity handling, actual-ingredient scoring and receipt export.
 - Used a bounded backend worker alongside frontend work, then an independent read-only correctness review. File ownership prevented overlapping edits.
 - Ran a real browser journey: start, interrupt during caramel, request a healthier version, finish and download the receipt; also checked mobile layout and API-failure recovery.
+- Verified three new orders and the final roast against the live OpenAI API, then tightened the roast prompt around actual ingredients and natural spoken quantities.
+- Enlarged and polished the existing Three.js cup, and made Beau's order and interruption reactions persist long enough to be read.
 
 ## Concrete example: “No caramel and add two shots”
 
@@ -30,4 +32,4 @@ A production build initially returned an HTTP 500 shell before the client recove
 
 ## Honest boundaries
 
-Codex authored code during development. It is not running inside every animation frame. The shipped demo is labelled **LOCAL DEMO** and uses a deterministic parser and ingredient-based humour. Optional server-side OpenAI endpoints are present, but real-key inference was not enabled because the user selected local mode. Mocked API tests do not establish real API availability or latency.
+Codex authored code during development. It is not running inside every animation frame. Server-side OpenAI inference is live when configured and was verified with real requests; the local fallback remains deterministic. The browser identifies the source of each result. The score and animation come from the state engine. A recorded audio file proved the transcription endpoint. The built-in microphone and recording controls opened in a browser, while their transcript UI was exercised with an intercepted response; spoken live transcription remains unverified.

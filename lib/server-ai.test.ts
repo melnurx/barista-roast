@@ -80,3 +80,24 @@ test('structured AI recipes are validated and reconciled rather than trusted as 
     assert.deepEqual((captured?.text as {format:{type:string}}).format.type, 'json_schema');
   } finally { globalThis.fetch = oldFetch; if (oldKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = oldKey; }
 });
+
+test('AI roast speaks a rounded partial pump while scoring the exact poured amount', async () => {
+  const oldKey = process.env.OPENAI_API_KEY;
+  const oldFetch = globalThis.fetch;
+  process.env.OPENAI_API_KEY = 'test-only-placeholder';
+  let input: { actualRecipe?: { ingredients: Array<{ id: string; quantity: number }> }; scores?: { chaos: number }; changes?: number } = {};
+  globalThis.fetch = async (_url, init) => {
+    input = JSON.parse(JSON.parse(init?.body as string).input);
+    return Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify({ commentary: 'The caramel got in before the plot twist.', name: 'The First Draft' }) }] }] });
+  };
+  try {
+    const poured = { ice: 5, caramel: 1.55612903, soy: 180, espresso: 3 };
+    const recipe = { ...DEFAULT_RECIPE, ingredients: [{ id: 'ice' as const, quantity: 5 }, { id: 'caramel' as const, quantity: 1.55612903 }, { id: 'soy' as const, quantity: 180 }, { id: 'espresso' as const, quantity: 3 }] };
+    const result = await roastDrink(recipe, poured, 1);
+    assert.equal(result.source, 'openai');
+    assert.equal(input.actualRecipe?.ingredients.find(item => item.id === 'caramel')?.quantity, 1.6);
+    assert.equal(input.scores?.chaos, 43);
+    assert.equal(input.changes, 1);
+    assert.equal(poured.caramel, 1.55612903);
+  } finally { globalThis.fetch = oldFetch; if (oldKey === undefined) delete process.env.OPENAI_API_KEY; else process.env.OPENAI_API_KEY = oldKey; }
+});

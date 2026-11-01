@@ -227,6 +227,7 @@ export function buildRoast(recipe: Recipe, poured?: Poured): string {
   if (positive(map.strawberry) && shots) return 'Strawberry foam over espresso. Your coffee has entered its romantic-comedy era.';
   if (shots >= 4) return `${shots} espresso shots. This coffee has already replied to your emails and reorganised the office.`;
   if (positive(map.matcha) && shots) return 'Matcha and espresso. Two main characters, one glass. I hope they have good chemistry.';
+  if (positive(map.chocolate) && shots >= 3) return `${shots} espresso shots and chocolate. Dessert has brought a bodyguard to your coffee break.`;
   if (positive(map.whipped) && pumps) return 'Syrup, whipped cream, and a very convincing coffee disguise. Dessert, your cover is blown.';
   if (pumps >= 4) return `${pumps} syrup pumps. The coffee is now a supporting character in a caramel-coloured drama.`;
   if (recipe.wantsHealthy) return 'Future sweet extras cancelled. A respectable plot twist; the glass still remembers the first draft.';

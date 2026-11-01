@@ -8,7 +8,7 @@ Built during the DevDay London hackathon on **1 November 2026** with Codex. The 
 
 ![The Barista Roast coffee lab](docs/preview.png)
 
-[Watch the 55-second captioned demo](https://github.com/melnurx/barista-roast/raw/refs/heads/main/docs/demo.mp4) · [Public repository](https://github.com/melnurx/barista-roast)
+[Watch the captioned live AI demo](https://github.com/melnurx/barista-roast/raw/refs/heads/main/docs/demo.mp4) · [Public repository](https://github.com/melnurx/barista-roast)
 
 ## Run in two minutes
 
@@ -51,7 +51,7 @@ Also try “No caramel and add two espresso shots” or “Switch to oat milk”
 - Browser speech recognition when supported; failure leaves text fully usable.
 - Optional server-side OpenAI interpretation, final roast and recorded-audio transcription, with timeouts and local fallback.
 
-**Current demo is explicitly local mode.** Its parser and jokes are deterministic; they are not presented as live AI. The optional live OpenAI paths are implemented and tested with mocked responses, but have not been verified with a real key. Browser speech can depend on the browser vendor’s online service and microphone permission. Real-microphone recognition is not part of the automated verification.
+**Live OpenAI mode has been verified with a real key.** Three new orders, a mid-pour revision, a final roast, and an audio transcription returned `source: "openai"` locally. The browser footer identifies whether the current response came from OpenAI or the local fallback; no model drives the animation or score. Without a key or when an API request fails, the deterministic parser and jokes keep the core experience working. The built-in microphone opened and the recording controls worked in a real browser. The UI transcript callback was tested with an intercepted response; live spoken transcription through that microphone has not been verified.
 
 ## How it works
 
@@ -80,9 +80,9 @@ Key files:
 - `components/CoffeeLab.tsx`: ordering, interruption, voice and receipt journey.
 - `lib/server-ai.ts` and `app/api/*`: optional server-only API calls.
 
-## Optional live OpenAI mode
+## Live OpenAI mode
 
-Keep API keys server-side. Use Codex’s **OpenAI Developers** secure key setup when enabling live mode. The local Worker supports an ignored `.dev.vars` file; `.dev.vars.example` lists the variable names. Sites runtime secrets must be configured through its environment controls. Do not use a `NEXT_PUBLIC_` or `VITE_` key.
+Keep API keys server-side. Use Codex’s **OpenAI Developers** secure key setup when enabling live mode. The local Worker supports an ignored `.dev.vars` file; `.dev.vars.example` lists the variable names. The hosted Site uses a server-side secret, never a browser variable. Do not use a `NEXT_PUBLIC_` or `VITE_` key.
 
 - `OPENAI_API_KEY`: optional. If absent, no OpenAI request is sent.
 - `OPENAI_MODEL`: defaults to `gpt-6-luna`.
