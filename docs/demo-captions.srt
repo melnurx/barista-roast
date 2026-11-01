@@ -1,44 +1,39 @@
 1
-00:00:00,300 --> 00:00:04,100
+00:00:00,000 --> 00:00:03,000
 BARISTA ROAST
 Your coffee. Freshly judged.
 
 2
-00:00:04,200 --> 00:00:11,200
-Four espresso shots. Six caramel pumps.
-Strawberry foam and whipped cream.
+00:00:03,000 --> 00:00:08,000
+One order. One animated coffee.
+Beau has opinions already.
 
 3
-00:00:11,300 --> 00:00:17,000
+00:00:08,000 --> 00:00:12,000
 OpenAI interprets the order.
-Every ingredient pours into the 3D cup.
+The 3D drink pours in real time.
 
 4
-00:00:17,100 --> 00:00:21,200
+00:00:12,000 --> 00:00:19,000
 Actually… make it healthy.
-3.7 caramel pumps are already in the glass.
+3.2 caramel pumps are already in the glass.
 
 5
-00:00:21,300 --> 00:00:26,200
+00:00:19,000 --> 00:00:27,000
 OpenAI changes what comes next.
-Already-poured caramel stays.
+Already-poured caramel cannot be removed.
 
 6
-00:00:26,300 --> 00:00:34,100
-Oat milk and espresso finish the drink.
-The future sweet extras are gone.
+00:00:27,000 --> 00:00:34,500
+Beau delivers the final roast.
+The orange chaos score reflects the actual drink.
 
 7
-00:00:34,200 --> 00:00:42,100
-A live OpenAI roast for the final cup.
-The orange chaos score is playful, not scientific.
+00:00:34,500 --> 00:00:42,300
+The receipt keeps 3.2 caramel pumps,
+four espresso shots and one plot twist.
 
 8
-00:00:42,200 --> 00:00:50,800
-The receipt records 3.7 caramel pumps,
-four shots, and one plot twist.
-
-9
-00:00:50,900 --> 00:01:00,700
-OpenAI connected · Built with Codex
+00:00:42,300 --> 00:01:00,800
+Built with Codex · OpenAI connected
 You can change your mind. You can’t un-pour caramel.

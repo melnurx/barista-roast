@@ -1,16 +1,16 @@
 # Demo and submission
 
-The recorded [`demo.mp4`](demo.mp4) is **60.76 seconds**, H.264, 1440×1080 at 25 fps, with burned-in captions; the matching [`demo-captions.srt`](demo-captions.srt) is also supplied. It shows the final coffee-first UI running locally with a server-side key: order interpretation, the mid-pour revision and the final roast each returned HTTP 200 with `source: openai`. The video shows the connected badge, orange chaos score, a 3.7-pump caramel commitment that survives the edit, and the matching receipt. No key appears in the recording. The score, ingredient ledger and 3D animation are deterministic, not model-generated. The recording does not claim a live microphone demonstration.
+The recorded [`demo.mp4`](demo.mp4) is **60.8 seconds**, H.264, 1440×1080 at 25 fps, with burned-in captions; the matching [`demo-captions.srt`](demo-captions.srt) is also supplied. It shows the deployed coffee-first layout running locally with a server-side key: order interpretation, the mid-pour revision and the final roast each returned HTTP 200 with `source: openai`. The video shows the connected badge, orange chaos score, a 3.2-pump caramel commitment that survives the edit, and the matching receipt. No key appears in the recording. The score, ingredient ledger and 3D animation are deterministic, not model-generated. The recording does not claim a live microphone demonstration.
 
 ## 60-second live pitch
 
 **0–11 s:** “This is Barista Roast. Four espresso shots, six caramel pumps, strawberry foam and whipped cream. Your coffee, freshly judged.” Start the order.
 
-**11–26 s:** “OpenAI interprets the order. Now I interrupt: actually, make it healthy. The remaining sweet extras can go, but the 3.7 pumps already poured cannot.” Show the paused glass and revision.
+**11–26 s:** “OpenAI interprets the order. Now I interrupt: actually, make it healthy. The remaining sweet extras can go, but the 3.2 pumps already poured cannot.” Show the paused glass and revision.
 
 **26–42 s:** “Oat milk and espresso continue. The live roast describes the drink actually made; the orange chaos score uses explicit arithmetic.”
 
-**42–51 s:** “The receipt preserves 3.7 caramel pumps, four shots and one plot twist.” Show the receipt.
+**42–51 s:** “The receipt preserves 3.2 caramel pumps, four shots and one plot twist.” Show the receipt.
 
 **51–61 s:** “Codex built and verified the state engine, caught a parser bug in review and helped make the demo. You can’t un-pour caramel.”
 
