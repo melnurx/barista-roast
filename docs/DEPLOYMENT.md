@@ -4,10 +4,12 @@ The production build is a Cloudflare Worker plus static browser assets, generate
 
 The local demo needs no runtime secrets or database. Live AI uses server-only `OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_TRANSCRIBE_MODEL` environment values. `.dev.vars` is ignored by Git; the hosted `OPENAI_API_KEY` is a redacted secret in Sites, not a source file or browser variable.
 
-## Hosted publication status
+## Public deployment
 
-The original Sites project in `.openai/hosting.json` was recovered without changing its ID. Sites now returns it as active and owner-controlled. Its audience was changed to public for the requested anonymous demo, and its server-side `OPENAI_API_KEY` is configured at environment revision 1. A production version must still be saved, deployed and tested before a hosted URL can be claimed.
+The original Sites project in `.openai/hosting.json` was recovered without changing its ID. Its audience was changed to public for the requested anonymous demo, and its server-side `OPENAI_API_KEY` is configured at environment revision 1. The live URL is **[barista-roast-london.melnur461195.chatgpt.site](https://barista-roast-london.melnur461195.chatgpt.site)**.
 
-The project identity is retained. Source is pushed to the original Site repository, packaged from the same commit and published through Sites versioning. Keep the key in server-side environment controls when updating the deployment.
+An anonymous HTTP request returned 200 for `/` and `/api/health`; the latter reported AI enabled with `gpt-6-luna`. A fresh browser loaded WebGL and all observed script, style and font assets without errors. Its initial order, mid-pour revision and final roast each returned HTTP 200 with `source: openai`. The revision preserved 1.158 committed caramel pumps (shown as 1.2), cancelled future strawberry foam and whipped cream, and produced a matching roast, score, receipt and downloaded PNG. The public `/api/transcribe` route accurately transcribed a recorded test WAV with `source: openai`. Browser console errors: zero.
+
+Source is pushed to the original Site repository, packaged from the same commit and published through Sites versioning. Keep the key in server-side environment controls when updating the deployment.
 
 A deployment archive is provided alongside the source deliverables. It contains the Worker and static assets; it is not a source-code backup. The GitHub repository and source ZIP contain the editable source. The actual hackathon submission still needs its team details and form submission.

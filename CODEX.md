@@ -13,6 +13,7 @@ Built on 1 November 2026 for the London hackathon. This document records actual 
 - Ran a real browser journey: start, interrupt during caramel, request a healthier version, finish and download the receipt; also checked mobile layout and API-failure recovery.
 - Verified three new orders and the final roast against the live OpenAI API, then tightened the roast prompt around actual ingredients and natural spoken quantities.
 - Enlarged and polished the existing Three.js cup, and made Beau's order and interruption reactions persist long enough to be read.
+- Recovered the original Sites project, configured its server-side secret, published it for anonymous visitors, and verified the public order-to-receipt flow.
 
 ## Concrete example: “No caramel and add two shots”
 

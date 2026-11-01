@@ -20,6 +20,9 @@
 | Live transcription endpoint | A recorded test WAV was transcribed accurately via `POST /api/transcribe` with `source: openai` in 2.9 s |
 | Real microphone and UI | Browser opened the MacBook Pro built-in microphone with one live audio track; the app showed Listening and Stop recording, then put an intercepted test transcript in the order field |
 | Voice failure UI | A browser-injected microphone denial showed the permission error, retained an enabled text field, and left the microphone control ready for another try |
+| Anonymous hosted page and assets | Public URL returned HTTP 200; real Chrome loaded its WebGL canvas and eight observed script/style/font assets with no failures or console errors |
+| Hosted order-to-receipt | Order, healthy revision and final roast each returned HTTP 200, `source: openai`; 1.158 committed caramel pumps survived the edit and appear as 1.2 in the final ledger, receipt and PNG alongside four espresso shots; future strawberry foam and whipped cream were cancelled |
+| Hosted transcription | Anonymous `POST /api/transcribe` returned HTTP 200, `source: openai`, with the expected recorded-WAV text in 3.1 s |
 
 ## Bugs found and repaired
 
@@ -32,7 +35,7 @@ The ordinary production browser journey recorded zero console errors. The two fa
 
 ## Limits
 
-- The live API checks used a local server-side key. The hosted secret is configured separately and requires public deployment verification before hosted AI can be claimed.
+- The local API checks used an ignored server-side key. The hosted Site uses a separate redacted server-side secret and was verified anonymously at [the public URL](https://barista-roast-london.melnur461195.chatgpt.site).
 - The backend transcription test used a recorded audio file. The real microphone capture and recording controls were exercised, but the UI transcription reply was intercepted, so no spoken end-to-end transcription claim is made. Text is always available.
 - The renderer approximates liquids with layered meshes and shaders. Layer stacking follows ingredient categories because the scene receives aggregate poured quantities rather than chronological pour events. Changing the stacking rule without a pour history could misrepresent the reliable ledger; the swirl is a visual effect.
 - Initial page load still needs the app assets. “Network fallback” means the loaded core survives API failure; this is not an offline-installable PWA.

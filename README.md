@@ -8,7 +8,7 @@ Built during the DevDay London hackathon on **1 November 2026** with Codex. The 
 
 ![The Barista Roast coffee lab](docs/preview.png)
 
-[Watch the captioned live AI demo](https://github.com/melnurx/barista-roast/raw/refs/heads/main/docs/demo.mp4) · [Public repository](https://github.com/melnurx/barista-roast)
+[Try the public demo](https://barista-roast-london.melnur461195.chatgpt.site) · [Watch the captioned live AI demo](https://github.com/melnurx/barista-roast/raw/refs/heads/main/docs/demo.mp4) · [Public repository](https://github.com/melnurx/barista-roast)
 
 ## Run in two minutes
 
@@ -51,7 +51,7 @@ Also try “No caramel and add two espresso shots” or “Switch to oat milk”
 - Browser speech recognition when supported; failure leaves text fully usable.
 - Optional server-side OpenAI interpretation, final roast and recorded-audio transcription, with timeouts and local fallback.
 
-**Live OpenAI mode has been verified with a real key.** Three new orders, a mid-pour revision, a final roast, and an audio transcription returned `source: "openai"` locally. The browser footer identifies whether the current response came from OpenAI or the local fallback; no model drives the animation or score. Without a key or when an API request fails, the deterministic parser and jokes keep the core experience working. The built-in microphone opened and the recording controls worked in a real browser. The UI transcript callback was tested with an intercepted response; live spoken transcription through that microphone has not been verified.
+**Live OpenAI mode has been verified with a real key, locally and on the public Site.** Three new orders, a mid-pour revision, a final roast, and an audio transcription returned `source: "openai"` locally. The public Site then passed an anonymous order → interruption → roast → receipt/download journey and a recorded-audio transcription. The browser footer identifies whether the current response came from OpenAI or the local fallback; no model drives the animation or score. Without a key or when an API request fails, the deterministic parser and jokes keep the core experience working. The built-in microphone opened and the recording controls worked in a real browser. The UI transcript callback was tested with an intercepted response; live spoken transcription through that microphone has not been verified.
 
 ## How it works
 
