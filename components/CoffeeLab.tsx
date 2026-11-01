@@ -61,6 +61,20 @@ function revisionQuip(order: string, poured: Poured, fallback: string): string {
   return `Already in the glass: ${already}. I can rewrite the rest; this cup keeps receipts.`;
 }
 
+function firstImpression(recipe: Recipe): string {
+  const quantity = (id: IngredientId) => recipe.ingredients.find(item => item.id === id)?.quantity ?? 0;
+  const milk = quantity('oat') + quantity('milk') + quantity('almond') + quantity('soy');
+  if (quantity('espresso') >= 5 && !milk) return 'I’m guessing your inbox has asked for a day off. That espresso order has already opened six tabs.';
+  if (quantity('strawberry') && quantity('whipped')) return 'I’m guessing your coffee has a playlist and a dramatic entrance. Strawberry foam brought the costume department.';
+  if (quantity('matcha') && quantity('vanilla')) return 'I’m guessing you judge café lighting before the menu. Matcha and vanilla have requested flattering angles.';
+  if (quantity('espresso') >= 4 && quantity('caramel') >= 3) return 'I’m guessing “just a quick coffee” takes up your whole calendar. Caramel and espresso brought an entourage.';
+  if (quantity('strawberry')) return 'Strawberry foam on coffee? I’m guessing this cup has a group chat and insists it is the main character.';
+  if (quantity('matcha')) return 'I’m guessing your coffee has opinions about the playlist. Matcha certainly does.';
+  if (quantity('espresso') >= 4) return 'I’m guessing your to-do list is afraid of you. That espresso has already started the first task.';
+  if (quantity('caramel')) return 'I’m guessing you asked for a coffee and invited dessert as your plus-one. Caramel accepted immediately.';
+  return buildRoast(recipe);
+}
+
 function BaristaFace() { return <svg viewBox="0 0 80 80" aria-hidden="true"><path d="m40 2 8 9 12-2 3 12 12 5-4 12 7 10-10 8-1 12-13 1-8 9-10-8-12 2-5-12-11-5 4-12-7-10 10-8 1-12 13-1Z" fill="currentColor"/><path d="M23 28c5-5 11-5 15-1m9 0c4-3 8-2 11 1" stroke="#f7eddb" fill="none" strokeWidth="3" strokeLinecap="round"/><ellipse cx="30" cy="37" rx="2.8" ry="4" fill="#f7eddb"/><ellipse cx="51" cy="37" rx="2.8" ry="4" fill="#f7eddb"/><path d="M28 48c6 11 19 11 25-1" stroke="#f7eddb" strokeWidth="3" fill="none" strokeLinecap="round"/></svg>; }
 
 function Modal({children,onClose,label}:{children:ReactNode;onClose:()=>void;label:string}) {
@@ -124,8 +138,8 @@ export default function CoffeeLab() {
         result={...reconciled,warnings:[...new Set([...reconciled.warnings,...reconciled.recipe.notes])],commentary:buildRoast(reconciled.recipe),source:'local'};
       }
       if(id!==requestId.current)return;
-      quipHoldUntil.current=performance.now()+2500;
-      setCommentary(isChange?revisionQuip(text,poured,result.commentary):result.commentary);setSource(result.source);setWarnings(result.warnings);setStirred(false);setReceiptSaved(false);
+      quipHoldUntil.current=performance.now()+4200;
+      setCommentary(isChange?revisionQuip(text,poured,result.commentary):firstImpression(result.recipe));setSource(result.source);setWarnings(result.warnings);setStirred(false);setReceiptSaved(false);
       if(isChange){dispatch({type:'revise',recipe:result.recipe});setChange('');playSound('pop',sound);}
       else{dispatch({type:'start',recipe:result.recipe});playSound('start',sound);if(window.innerWidth<621)scene.current?.scrollIntoView({behavior:'smooth',block:'start'});}
     }catch{setVoiceStatus('Could not read that order. Try “an iced oat latte”.');}

@@ -47,7 +47,7 @@ Also try “No caramel and add two espresso shots” or “Switch to oat milk”
 - Live immutable quantity ledger with pause/resume, future-plan reconciliation and capacity constraints.
 - Friendly ingredient-grounded commentary and deterministic scores with visible arithmetic.
 - Optional sound cues, orbit interaction, a swirl effect, final reveal and a downloadable receipt.
-- Coffee-first two-column stage on laptop/projector, compact order input and microphone, Beau and chaos score beside the cup, collapsed detail controls, mobile layout, keyboard controls, modal focus handling and reduced CSS motion.
+- Full-width coffee stage on laptop/projector, compact order bar and microphone, Beau and chaos score beside the cup, collapsed detail controls, mobile layout, keyboard controls, modal focus handling and reduced CSS motion.
 - Browser speech recognition when supported; failure leaves text fully usable.
 - Optional server-side OpenAI interpretation, final roast and recorded-audio transcription, with timeouts and local fallback.
 
